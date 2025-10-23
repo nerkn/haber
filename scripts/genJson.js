@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 import mysql from "mysql2/promise";
 
 const conn = await mysql.createConnection(process.env.DB_URL);
