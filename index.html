@@ -569,8 +569,8 @@
         async function loadData() {
             try {
                 const [tagsResponse, articlesResponse] = await Promise.all([
-                    fetch('/api/v1025/tags'),
-                    fetch('/api/v1025/news')
+                    fetch('tags.json'),
+                    fetch('news.json')
                 ]);
 
                 if (!tagsResponse.ok || !articlesResponse.ok) {
