@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PULSE - Revolutionary News</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-tertiary: #adb5bd;
+            --accent: #0066ff;
+            --accent-hover: #0052cc;
+            --border: #dee2e6;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --modal-bg: rgba(0, 0, 0, 0.5);
+            --card-bg: #ffffff;
+            --tag-bg: #f1f3f5;
+            --tag-text: #495057;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0a0b0d;
+            --bg-secondary: #141517;
+            --bg-tertiary: #1e1f23;
+            --text-primary: #f8f9fa;
+            --text-secondary: #adb5bd;
+            --text-tertiary: #6c757d;
+            --accent: #4dabf7;
+            --accent-hover: #339af0;
+            --border: #343a40;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --card-bg: #141517;
+            --tag-bg: #2d2f33;
+            --tag-text: #adb5bd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(var(--bg-secondary), 0.9);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        /* Tags Bar */
+        .tags-bar {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .tags-bar::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .tags-bar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .tags-bar::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .tags-container {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+
+        .tag {
+            padding: 0.5rem 1rem;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            font-weight: 500;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tag::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: -1;
+        }
+
+        .tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .tag.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .tag.frequent {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+        }
+
+        .tag.normal {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .tag.rare {
+            font-size: 0.9rem;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .article-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .article-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px var(--shadow);
+        }
+
+        .article-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .article-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .article-card:hover .article-header {
+            color: var(--accent);
+        }
+
+        .article-excerpt {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.6;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        .article-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .article-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .article-tag:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-bg);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            max-width: 800px;
+            max-height: 90vh;
+            width: 90%;
+            overflow-y: auto;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            z-index: 10;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .modal-close:hover {
+            background: var(--accent);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .modal-footer {
+            padding: 0 2rem 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-link {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .modal-link:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 0 1rem;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* No articles message */
+        .no-articles {
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+        }
+
+        .no-articles h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">PULSE</div>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="tags-bar">
+        <div class="tags-container" id="tagsContainer">
+            <!-- Tags will be loaded here -->
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Loading news...
+        </div>
+        <div class="articles-grid" id="articlesGrid" style="display: none;">
+            <!-- Articles will be loaded here -->
+        </div>
+        <div class="no-articles" id="noArticles" style="display: none;">
+            <h2>No articles found</h2>
+            <p>Try selecting different tags</p>
+        </div>
+    </main>
+
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">×</button>
+                <h1 class="modal-title" id="modalTitle"></h1>
+                <div class="article-meta" id="modalMeta"></div>
+            </div>
+            <div class="modal-body">
+                <div class="modal-text" id="modalText"></div>
+                <div class="article-tags" id="modalTags"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="modal-link" id="modalLink" target="_blank">Read Original</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let articles = [];
+        let tags = [];
+        let tagFrequency = {};
+        let activeTag = null;
+        let currentTheme = localStorage.getItem('theme') || 'light';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme(currentTheme);
+            loadData();
+        });
+
+        // Theme management
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const themeToggle = document.querySelector('.theme-toggle');
+            themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', theme);
+        }
+
+        function toggleTheme() {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(currentTheme);
+        }
+
+        // Data loading
+        async function loadData() {
+            try {
+                const [tagsResponse, articlesResponse] = await Promise.all([
+                    fetch('/api/v1025/tags'),
+                    fetch('/api/v1025/news')
+                ]);
+
+                if (!tagsResponse.ok || !articlesResponse.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+
+                tags = await tagsResponse.json();
+                articles = await articlesResponse.json();
+
+                calculateTagFrequency();
+                renderTags();
+                renderArticles();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // Fallback to mock data for demo
+                loadMockData();
+            }
+        }
+
+        // Mock data for demo
+        function loadMockData() {
+            tags = [
+                { id: 1, tag: 'Technology' },  
+            ];
+
+            articles = [
+                {
+                    id: 6,
+                    title: 'Economic Shift: Remote Work Revolution Reshapes Global Markets',
+                    long: 'The permanent shift to remote work is fundamentally changing global economic patterns, according to a comprehensive new study. Cities that were once economic powerhouses are seeing population declines while smaller towns experience unprecedented growth. The trend is affecting everything from real estate prices to local business models. Companies are rethinking their physical footprints, with many downsizing office spaces permanently. This transformation is creating new opportunities for digital infrastructure and services tailored to distributed workforces. Economists predict this could lead to a more balanced regional development and reduced urban congestion. The study also highlights challenges in maintaining company culture and collaboration in remote environments.',
+                    tags: '4,8',
+                    orjLink: 'https://example.com/remote-work-economy',
+                    ctime: '2024-01-15T05:15:00Z'
+                }
+            ];
+
+            calculateTagFrequency();
+            renderTags();
+            renderArticles();
+        }
+
+        // Calculate tag frequency
+        function calculateTagFrequency() {
+            tagFrequency = {};
+            articles.forEach(article => {
+                const articleTags = article.tags.split(',').map(t => parseInt(t.trim()));
+                articleTags.forEach(tagId => {
+                    tagFrequency[tagId] = (tagFrequency[tagId] || 0) + 1;
+                });
+            });
+        }
+
+        // Render tags
+        function renderTags() {
+            const container = document.getElementById('tagsContainer');
+            container.innerHTML = '';
+
+            // Sort tags by frequency
+            const sortedTags = tags.sort((a, b) => (tagFrequency[b.id] || 0) - (tagFrequency[a.id] || 0));
+
+            // Add "All" tag
+            const allTag = document.createElement('div');
+            allTag.className = 'tag frequent';
+            allTag.textContent = 'All';
+            allTag.onclick = () => filterByTag(null);
+            if (!activeTag) allTag.classList.add('active');
+            container.appendChild(allTag);
+
+            // Add other tags with size classes
+            sortedTags.forEach(tag => {
+                const frequency = tagFrequency[tag.id] || 0;
+                let sizeClass = 'rare';
+                if (frequency >= 3) sizeClass = 'frequent';
+                else if (frequency >= 2) sizeClass = 'normal';
+
+                const tagElement = document.createElement('div');
+                tagElement.className = `tag ${sizeClass}`;
+                tagElement.textContent = tag.tag;
+                tagElement.onclick = () => filterByTag(tag.id);
+                if (activeTag === tag.id) tagElement.classList.add('active');
+                container.appendChild(tagElement);
+            });
+        }
+
+        // Filter articles by tag
+        function filterByTag(tagId) {
+            if (activeTag === tagId) {
+                activeTag = null;
+            } else {
+                activeTag = tagId;
+            }
+            renderTags();
+            renderArticles();
+        }
+
+        // Render articles
+        function renderArticles() {
+            const grid = document.getElementById('articlesGrid');
+            const loading = document.getElementById('loading');
+            const noArticles = document.getElementById('noArticles');
+
+            loading.style.display = 'none';
+
+            let filteredArticles = articles;
+            if (activeTag) {
+                filteredArticles = articles.filter(article => 
+                    article.tags.split(',').map(t => parseInt(t.trim())).includes(activeTag)
+                );
+            }
+
+            if (filteredArticles.length === 0) {
+                grid.style.display = 'none';
+                noArticles.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            noArticles.style.display = 'none';
+            grid.innerHTML = '';
+
+            filteredArticles.forEach(article => {
+                const card = createArticleCard(article);
+                grid.appendChild(card);
+            });
+        }
+
+        // Create article card
+        function createArticleCard(article) {
+            const card = document.createElement('div');
+            card.className = 'article-card';
+            card.onclick = () => openModal(article);
+
+            const articleTags = article.tags.split(',').map(t => parseInt(t.trim()));
+            const tagNames = articleTags.map(tagId => {
+                const tag = tags.find(t => t.id === tagId);
+                return tag ? tag.tag : '';
+            }).filter(Boolean);
+
+            const timeAgo = getTimeAgo(new Date(article.ctime));
+
+            card.innerHTML = `
+                <h2 class="article-header">${article.title}</h2>
+                <div class="article-meta">
+                    <span>${timeAgo}</span>
+                    <span>${getReadingTime(article.long)} min read</span>
+                </div>
+                <p class="article-excerpt">${article.long}</p>
+                <div class="article-tags">
+                    ${tagNames.map(tag => `<span class="article-tag">${tag}</span>`).join('')}
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Open modal
+        function openModal(article) {
+            const modal = document.getElementById('articleModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalText = document.getElementById('modalText');
+            const modalMeta = document.getElementById('modalMeta');
+            const modalTags = document.getElementById('modalTags');
+            const modalLink = document.getElementById('modalLink');
+
+            modalTitle.textContent = article.title;
+            modalText.innerHTML = article.long.split('\n').map(p => `<p>${p}</p>`).join('');
+            
+            const articleTags = article.tags.split(',').map(t => parseInt(t.trim()));
+            const tagNames = articleTags.map(tagId => {
+                const tag = tags.find(t => t.id === tagId);
+                return tag ? tag.tag : '';
+            }).filter(Boolean);
+
+            modalMeta.innerHTML = `
+                <span>${new Date(article.ctime).toLocaleDateString()}</span>
+                <span>${getReadingTime(article.long)} min read</span>
+            `;
+
+            modalTags.innerHTML = tagNames.map(tag => `<span class="article-tag">${tag}</span>`).join('');
+            modalLink.href = article.orjLink;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('articleModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on background click
+        document.getElementById('articleModal').addEventListener('click', (e) => {
+            if (e.target.id === 'articleModal') {
+                closeModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Utility functions
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return `${interval} ${unit}${interval === 1 ? '' : 's'} ago`;
+                }
+            }
+            return 'Just now';
+        }
+
+        function getReadingTime(text) {
+            const wordsPerMinute = 200;
+            const words = text.split(/\s+/).length;
+            return Math.ceil(words / wordsPerMinute);
+        }
+    </script>
+</body>
+</html>
