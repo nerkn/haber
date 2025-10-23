@@ -147,7 +147,7 @@
         .tags-container {
             display: flex;
             gap: 0.5rem;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             align-items: center;
         }
 
@@ -204,6 +204,11 @@
             font-size: 0.9rem;
             font-weight: 400;
             opacity: 0.8;
+        }
+        .tag.none {
+            font-size: 0.3rem;
+            font-weight: 100;
+            opacity: 0.6;
         }
 
         /* Main Content */
@@ -654,9 +659,10 @@
             // Add other tags with size classes
             sortedTags.forEach(tag => {
                 const frequency = tagFrequency[tag.id] || 0;
-                let sizeClass = 'rare';
+                let sizeClass = 'none';
                 if (frequency >= 3) sizeClass = 'frequent';
                 else if (frequency >= 2) sizeClass = 'normal';
+                else if (frequency >= 1) sizeClass = 'rare';
 
                 const tagElement = document.createElement('div');
                 tagElement.className = `tag ${sizeClass}`;
