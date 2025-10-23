@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "generate": "node scripts/genJson.js",
-    "deploy": "npm run generate && wrangler deploy --assets=./dist"
+    "deploy": "npm run generate && wrangler deploy --assets=./dist --compatibility-date 2025-10-23"
   },
   "dependencies": {
     "mysql2": "^3.15.3",
