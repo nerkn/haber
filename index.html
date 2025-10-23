@@ -262,7 +262,12 @@
         .article-card:hover::before {
             transform: scaleY(1);
         }
-
+        .article-card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
         .article-header {
             font-size: 1.25rem;
             font-weight: 700;
@@ -275,7 +280,9 @@
         .article-card:hover .article-header {
             color: var(--accent);
         }
-
+        .limitingElement{
+            max-height: 6rem; /* Approx. 3 lines */
+        }
         .article-excerpt {
             color: var(--text-secondary);
             margin-bottom: 1rem;
@@ -407,6 +414,11 @@
             line-height: 1.8;
             color: var(--text-secondary);
             margin-bottom: 2rem;
+        }
+        .modal-text img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
 
         .modal-footer {
@@ -717,7 +729,9 @@
                     <span>${timeAgo}</span>
                     <span>${getReadingTime(article.long)} min read</span>
                 </div>
-                <p class="article-excerpt">${article.long}</p>
+                <limitingElement>
+                    <p class="article-excerpt">${article.long}</p>
+                </limitingElement>
                 <div class="article-tags">
                     ${tagNames.map(tag => `<span class="article-tag">${tag}</span>`).join('')}
                 </div>
