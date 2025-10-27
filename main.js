@@ -112,35 +112,61 @@
             const noArticles = document.getElementById('noArticles');
 
             loading.style.display = 'none';
+            grid.innerHTML = '';
 
             let filteredArticles = articles;
             if (activeTag) {
+                const tagSummary = tagSummaries.find(s => s.tag === activeTag);
+                if (tagSummary) {
+                    const summaryCard = createTagSummaryCard(tagSummary);
+                    grid.appendChild(summaryCard);
+                }
+
                 filteredArticles = articles.filter(article => 
                     article.tags.split(',').map(t => parseInt(t.trim())).includes(activeTag)
                 );
             }
 
-            if (filteredArticles.length === 0) {
-                grid.style.display = 'none';
-                noArticles.style.display = 'block';
-                return;
-            }
-
-            grid.style.display = 'grid';
-            noArticles.style.display = 'none';
-            grid.innerHTML = '';
-
             filteredArticles.forEach(article => {
                 const card = createArticleCard(article);
                 grid.appendChild(card);
             });
+
+            if (grid.children.length === 0) {
+                grid.style.display = 'none';
+                noArticles.style.display = 'block';
+            } else {
+                grid.style.display = 'grid';
+                noArticles.style.display = 'none';
+            }
+        }
+
+        // Create tag summary card
+        function createTagSummaryCard(tag_summary) {
+            const card = document.createElement('div');
+            card.className = 'article-card summary-card';
+            card.onclick = () => openModal(tag_summary, true);
+
+            const tagName = tags.find(t => t.id === tag_summary.tag)?.tag || '';
+
+            card.innerHTML = `
+                <h2 class="article-header">${tag_summary.title}</h2>
+                <limitingElement>
+                    <p class="article-excerpt">${tag_summary.short}</p>
+                </limitingElement>
+                <div class="article-tags">
+                    <span class="article-tag">${tagName}</span>
+                </div>
+            `;
+
+            return card;
         }
 
         // Create article card
         function createArticleCard(article) {
             const card = document.createElement('div');
             card.className = 'article-card';
-            card.onclick = () => openModal(article);
+            card.onclick = () => openModal(article, false);
 
             const articleTags = article.tags.split(',').map(t => parseInt(t.trim()));
             const tagNames = articleTags.map(tagId => {
@@ -168,7 +194,7 @@
         }
 
         // Open modal
-        function openModal(article) {
+        function openModal(item, isSummary = false) {
             const modal = document.getElementById('articleModal');
             const modalTitle = document.getElementById('modalTitle');
             const modalText = document.getElementById('modalText');
@@ -176,22 +202,32 @@
             const modalTags = document.getElementById('modalTags');
             const modalLink = document.getElementById('modalLink');
 
-            modalTitle.textContent = article.title;
-            modalText.innerHTML = article.long.split('\n').map(p => `<p>${p}</p>`).join('');
-            
-            const articleTags = article.tags.split(',').map(t => parseInt(t.trim()));
-            const tagNames = articleTags.map(tagId => {
-                const tag = tags.find(t => t.id === tagId);
-                return tag ? tag.tag : '';
-            }).filter(Boolean);
+            if (isSummary) {
+                modalTitle.textContent = item.title;
+                modalText.innerHTML = item.long.split('\n').map(p => `<p>${p}</p>`).join('');
+                modalMeta.innerHTML = '';
+                const tagName = tags.find(t => t.id === item.tag)?.tag || '';
+                modalTags.innerHTML = `<span class="article-tag">${tagName}</span>`;
+                modalLink.style.display = 'none';
+            } else {
+                modalTitle.textContent = item.title;
+                modalText.innerHTML = item.long.split('\n').map(p => `<p>${p}</p>`).join('');
+                
+                const articleTags = item.tags.split(',').map(t => parseInt(t.trim()));
+                const tagNames = articleTags.map(tagId => {
+                    const tag = tags.find(t => t.id === tagId);
+                    return tag ? tag.tag : '';
+                }).filter(Boolean);
 
-            modalMeta.innerHTML = `
-                <span>${new Date(article.ctime).toLocaleDateString()}</span>
-                <span>${getReadingTime(article.long)} min read</span>
-            `;
+                modalMeta.innerHTML = `
+                    <span>${new Date(item.ctime).toLocaleDateString()}</span>
+                    <span>${getReadingTime(item.long)} min read</span>
+                `;
 
-            modalTags.innerHTML = tagNames.map(tag => `<span class="article-tag">${tag}</span>`).join('');
-            modalLink.href = article.orjLink;
+                modalTags.innerHTML = tagNames.map(tag => `<span class="article-tag">${tag}</span>`).join('');
+                modalLink.href = item.orjLink;
+                modalLink.style.display = 'inline-block';
+            }
 
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
