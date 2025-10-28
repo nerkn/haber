@@ -131,9 +131,12 @@
                     grid.appendChild(card);
                 });
             }else{
-                tagSummaries.forEach(tagSummary => {
-                    const summaryCard = createTagSummaryCard(tagSummary);
-                    grid.appendChild(summaryCard);
+                tags.forEach(tag => {
+                    const tagSummary = tagSummaries.find(s => s.tag === tag.id);
+                    if (tagSummary) {
+                        const summaryCard = createTagSummaryCard(tagSummary);
+                        grid.appendChild(summaryCard);
+                    }
                 });
             }
 
