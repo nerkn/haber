@@ -133,7 +133,7 @@
             }else{
                 tags.forEach(tag => {
                     const tagSummary = tagSummaries.find(s => s.tag === tag.id);
-                    if (tagSummary) {
+                    if (tagSummary && tagSummary.short) {
                         const summaryCard = createTagSummaryCard(tagSummary);
                         grid.appendChild(summaryCard);
                     }
