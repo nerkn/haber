@@ -125,12 +125,17 @@
                 filteredArticles = articles.filter(article => 
                     article.tags.split(',').map(t => parseInt(t.trim())).includes(activeTag)
                 );
-            }
 
-            filteredArticles.forEach(article => {
-                const card = createArticleCard(article);
-                grid.appendChild(card);
-            });
+                filteredArticles.forEach(article => {
+                    const card = createArticleCard(article);
+                    grid.appendChild(card);
+                });
+            }else{
+                tagSummaries.forEach(tagSummary => {
+                    const summaryCard = createTagSummaryCard(tagSummary);
+                    grid.appendChild(summaryCard);
+                });
+            }
 
             if (grid.children.length === 0) {
                 grid.style.display = 'none';
