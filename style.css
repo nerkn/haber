@@ -235,6 +235,9 @@
             position: relative;
             overflow: hidden;
         }
+        .summary-card{
+            grid-column: 1/-1;
+        }
 
         .article-card::before {
             content: '';
